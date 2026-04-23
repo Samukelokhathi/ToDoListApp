@@ -1,0 +1,104 @@
+/* ===== Global Styles ===== */
+body {
+  font-family: Arial, sans-serif; /* Clean, readable font */
+  background-color: #f4f6f9; /* Light background for contrast */
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 600px; /* Centered layout */
+  margin: 50px auto;
+  background: #ffffff; /* White card-style background */
+  padding: 20px;
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+/* ===== Heading ===== */
+h1 {
+  text-align: center;
+  color: #333333; /* Dark text for readability */
+  margin-bottom: 20px;
+}
+
+/* ===== Form Section ===== */
+#todo-form {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+#input-field {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#add-task-btn {
+  margin-left: 10px;
+  padding: 10px 15px;
+  background-color: #4CAF50; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#add-task-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* ===== Task List ===== */
+#list-container {
+  margin-top: 20px;
+}
+
+#tasks li {
+  display: flex;
+  /* align-items: center; */
+  justify-content: space-between;
+  background: #45a049;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* ===== Task Text ===== */
+#tasks li span {
+  flex: 1;
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333333;
+}
+
+.btnContainer {
+  display: flex;
+  align-items: center;
+  float: right;
+  width: 50%;
+}
+
+/* ===== Delete Button ===== */
+.del-btn {
+  background-color: #e74c3c; /* Red delete button */
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  /* float: right; */
+}
+
+#del-btn:hover {
+  background-color: #c0392b; /* Darker red on hover */
+}
+
+/* ===== Checkbox Styling ===== */
+#checkbox {
+  transform: scale(1.2); /* Slightly larger checkbox */
+  cursor: pointer;
+}
