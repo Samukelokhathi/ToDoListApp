@@ -11,16 +11,36 @@
 
       <div class="container">
         <h1 id="header">To Do App</h1>
+        <input type="text" id="input-field" placeholder="Enter new task" required>
+        
+        <select  id="priority-select">
+          <option class="priority-low" value="low">Low</option>
+          <option class="priority-medium" value="medium">Medium</option>
+          <option class="priority-high" value="high">High</option>
+        </select>
+        
+        <button id="add-task-btn"> Add task</button> 
 
-        <form id="todo-form">
-            <input type="text" id="input-field" placeholder="Enter new task" required>
-            <button type="submit" id="add-task-btn"> Add task</button> 
-        </form>
-
-        <div id="list-container">
-            <ul id="tasks">
-            </ul>
+        <section id="task-filter">
+          <div id="search-filter">
+            <input type="text" placeholder="Search tasks...">
+            <button>Search</button>
+          </div>
+          <div id="task-filter-buttons">
+            <button id="all-task">All <span>0</span></button>
+            <button id="active-task">Active</button>
+            <button id="completed-task">Completed</button>
+            <button id="high-priority">High priority</button>
+          </div>      
+        </section>
+ 
+        
+        <div id="task-container">
+          <ul id="taskList"></ul>
         </div>
+        
+        
+
       </div>
 
   </body>

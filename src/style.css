@@ -1,104 +1,198 @@
-/* ===== Global Styles ===== */
-body {
-  font-family: Arial, sans-serif; /* Clean, readable font */
-  background-color: #f4f6f9; /* Light background for contrast */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ===== Container ===== */
-.container {
-  max-width: 600px; /* Centered layout */
-  margin: 50px auto;
-  background: #ffffff; /* White card-style background */
-  padding: 20px;
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
-}
-
-/* ===== Heading ===== */
-h1 {
-  text-align: center;
-  color: #333333; /* Dark text for readability */
-  margin-bottom: 20px;
-}
-
-/* ===== Form Section ===== */
-#todo-form {
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f0eb;
+  min-height: 100vh;
+  padding: 40px 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 700px;
+}
+
+/* --- Header --- */
+#header {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1a1825;
+}
+
+/* --- Input row card --- */
+.input-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #e3ddd7;
   margin-bottom: 20px;
 }
 
 #input-field {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  font-size: 16px;
+  border: 1.5px solid #6c63d5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  background: #f5f0eb;
+  color: #1a1825;
+}
+
+#input-field::placeholder {
+  color: #aaa;
+}
+
+#priority-select {
+  border: 1.5px solid #e3ddd7;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #1a1825;
+  cursor: pointer;
+  outline: none;
 }
 
 #add-task-btn {
-  margin-left: 10px;
-  padding: 10px 15px;
-  background-color: #4CAF50; /* Green button */
-  color: white;
+  background: #6c63d5;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
 #add-task-btn:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background: #5a52c0;
 }
 
-/* ===== Task List ===== */
-#list-container {
-  margin-top: 20px;
-}
 
-#tasks li {
+#task-filter{
+  margin-top: 5px;
   display: flex;
-  /* align-items: center; */
   justify-content: space-between;
-  background: #45a049;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
+  gap: 5px;
 }
 
-/* ===== Task Text ===== */
-#tasks li span {
+#search-filter input {
   flex: 1;
-  margin-left: 10px;
-  font-size: 16px;
-  color: #333333;
+  border: 1.5px solid #e3ddd7;
+  border-radius: 12px;
+  padding: 9px 20px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #1a1825;
+  outline: none;
 }
 
-.btnContainer {
+#task-filter-buttons {
   display: flex;
   align-items: center;
-  float: right;
-  width: 50%;
+  gap: 5px;
 }
 
-/* ===== Delete Button ===== */
-.del-btn {
-  background-color: #e74c3c; /* Red delete button */
-  color: white;
+#task-filter button {
+  padding: 7px 14px;
+  background: #fefefe;
+  color: #6c63d5;
   border: none;
-  padding: 6px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  /* float: right; */
-}
-
-#del-btn:hover {
-  background-color: #c0392b; /* Darker red on hover */
-}
-
-/* ===== Checkbox Styling ===== */
-#checkbox {
-  transform: scale(1.2); /* Slightly larger checkbox */
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
 }
+
+#task-filter button:active, #task-filter button:hover {
+  background: #ede9fb;
+}
+
+/* --- Task list --- */
+#taskList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+#taskList li {
+  background: #fff;
+  border: 1px solid #e3ddd7;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#taskList li span {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #1a1825;
+}
+
+#taskList li input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+/* --- Edit / Delete buttons --- */
+.edit-btn {
+  background: #ede9fb;
+  color: #6c63d5;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #fdeaec;
+  color: #e05c6b;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.priority {
+  background: #fdeaec;
+  color: #e05c6b;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: end;
+}
+
+.priority-high   { background: #FCEBEB; color: #A32D2D; }
+.priority-medium { background: #FAEEDA; color: #854F0B; }
+.priority-low    { background: #EAF3DE; color: #3B6D11; }
