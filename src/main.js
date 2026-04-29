@@ -1,45 +1,106 @@
+// DOM Elements
 const userInput = document.getElementById("input-field");
 const TaskList = document.getElementById("taskList");
 const addTaskBtn = document.getElementById("add-task-btn");
 const prioritySelect = document.getElementById("priority-select")
 
+const allTask =  document.querySelector("#all-task span")
+const activeTask = document.querySelector("#active-task span")
+const completedTask = document.querySelector("#completed-task span")
+const highPriorityTask = document.querySelector("#high-priority span")
 
-addTaskBtn.addEventListener("click", addTask);
 
-// App recives taks from local storage 
-// and creates task element for each task in local storage
 
-window.addEventListener("load", () => {
-  const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  storedTasks.forEach((task) => {
-  addTaskElement(task)   
-  })
+let editingTaskId = null;
+
+// Initialization
+function initializeApp(){
+  window.addEventListener("load", () => {
+    renderTasks(getTasksFromLocalStorage())
+    updateCounts();
 });
+  setupListeners();
+}
 
+// Event Listeners
+function setupListeners(){
+  addTaskBtn.addEventListener("click", addTask);
 
-// Add task to the list and local storage
-// called when the add task button is clicked
-// remove whitespace from the input and check if it's not empty
-// Create a task object with a unique id, text, and completed status
+  document.getElementById("search-btn").addEventListener("click", handleSearch);
+  
+  document.getElementById("all-task").addEventListener("click", () => {
+    renderTasks(getTasksFromLocalStorage());
+  });
+
+  document.getElementById("active-task").addEventListener("click", () => {
+    renderTasks(getTasksFromLocalStorage().filter(task => !task.completed));
+  })
+
+  document.getElementById("completed-task").addEventListener("click", () => {
+    renderTasks(getTasksFromLocalStorage().filter(task => task.completed));
+  })
+  
+  document.getElementById("high-priority").addEventListener("click", () => {
+    renderTasks(getTasksFromLocalStorage().filter(task => task.priority === "high"));
+  });
+
+  } 
+
+// Handlers
+function handleSearch(){
+  const searchTerm = document.getElementById("search-field").value.trim().toLowerCase();
+  const filteredTasks = getTasksFromLocalStorage().filter(task => task.text.toLowerCase().includes(searchTerm)); 
+
+  if (!filteredTasks.length) {
+    alert("No tasks found matching your search.");
+    return
+  }
+  renderTasks(filteredTasks);
+
+}
+
+// Core functions
+function checkIfTaskExists(taskContent){
+  return getTasksFromLocalStorage().some(task => task.text.toLowerCase() === taskContent.toLowerCase());
+}
 
 function addTask(){
   const taskContent = userInput.value.trim();
   const selectedPriority = prioritySelect.value;
 
-   if (taskContent !== ""){
-    const task = {id: Date.now(), Text: taskContent, completed: false, priority: selectedPriority};
-    addTaskElement(task);
-    saveTaskToLocalStorage(task);
+  if(taskContent == "") return alert("Please enter task!");
+
+  if(editingTaskId !== null) return editTask(taskContent, selectedPriority);
+
+  if(checkIfTaskExists(taskContent)){ 
+    alert("Task already exists!");
     userInput.value = "";
-  }else {
-     console.error("Can not add Empty task")
-  }
+    return;
+  } 
+
+  const task = {id: Date.now(), text: taskContent, completed: false, priority: selectedPriority };
+  addTaskElement(task);
+  saveTaskToLocalStorage(task);
+  userInput.value = "";
+  updateCounts();
 }
 
+function editTask(newTaskContent, newPriority){
+  const taskElement = document.querySelector(`li[data-id="${editingTaskId}"]`);
+  taskElement.querySelector('span').textContent = newTaskContent;
 
-// Create a task element and append it to the task list
-// Each task element has a checkbox, text, edit button, and delete button
+  const priorityBadge = taskElement.querySelector('.priority');
+  priorityBadge.textContent = newPriority;
+  priorityBadge.className = `priority priority ${newPriority}`;
 
+  updateTaskInLocalStorage(editingTaskId, newTaskContent, newPriority);
+  editingTaskId = null;
+  addTaskBtn.textContent = "Add Task";
+  userInput.value = "";
+  updateCounts();
+}
+
+// Rendering 
 function addTaskElement(task){
   const listItem = document.createElement("li");
   const checkBox = document.createElement("input");
@@ -52,103 +113,91 @@ function addTaskElement(task){
   checkBox.checked = task.completed;
 
   checkBox.addEventListener("change", () => {
-    task.completed = checkBox.checked
+    task.completed = checkBox.checked // == True
     updateCompletedInLocalStorage(task.id, checkBox.checked)
+    updateCounts();
   });
-  
-  listItem.setAttribute("data-id", task.id);
-  taskText.textContent = task.Text;
 
-  taskPriority.textContent = task.priority || "Medium";
-  taskPriority.className = "priority";
-  
-  
+  listItem.setAttribute("data-id", task.id);
+  taskText.textContent = task.text;
+
+  // i don't understand this part 
+  taskPriority.textContent = task.priority || "medium";
+  taskPriority.className = `priority priority-${task.priority || "medium"}`;
+
   editTaskBtn.textContent = "Edit";
   editTaskBtn.className = "edit-btn";
-  editTaskBtn.addEventListener("click", () => editTask(task.id));
+  editTaskBtn.addEventListener("click", () => { 
+    const currentTask = getTasksFromLocalStorage().find(t => t.id === task.id);
+    userInput.value = currentTask.text 
+    prioritySelect.value = currentTask.priority || "medium";
+    addTaskBtn.textContent = "Update Task";
+    editingTaskId = task.id;
+    userInput.focus(); // I don't understand this part either, what does focus do?
+
+  });
 
   deleteTaskBtn.textContent = "Delete";
   deleteTaskBtn.className = "delete-btn";
-  deleteTaskBtn.addEventListener("click", () => deleteTask(task.id));
+  deleteTaskBtn.addEventListener("click", () => {
+    document.querySelector(`li[data-id="${task.id}"]`).remove();
+    removeTaskFromLocalStorage(task.id);
+    updateCounts();
+  });
 
-  listItem.appendChild(checkBox)
-  listItem.appendChild(taskText);
-  listItem.appendChild(taskPriority);
+  listItem.append(checkBox, taskText, taskPriority, editTaskBtn, deleteTaskBtn);
   TaskList.appendChild(listItem);
-  listItem.appendChild(editTaskBtn);
-  listItem.appendChild(deleteTaskBtn);
+}
 
+function renderTasks(taskToRender){
+  TaskList.innerHTML = "";
+  taskToRender.forEach((task) => {addTaskElement(task)})
+} 
+
+function updateCounts(){
+  const tasks = getTasksFromLocalStorage();
+
+  allTask.textContent = tasks.length;
+  activeTask.textContent = tasks.filter(task => !task.completed).length;
+  completedTask.textContent = tasks.filter(task => task.completed).length;
+  highPriorityTask.textContent = tasks.filter(task => task.priority === "high").length;
 }
 
 
-// function markAsComplete(task){
-//   if(checkBox.checked){
-//     task.completed = true
-//   }else {
-//     task.completed = false
-//   }
-
-// Remove task from the dom where the del btn is clicked
-function deleteTask(id){
-  const taskElement = document.querySelector(`li[data-id="${id}"]`); 
-  taskElement.remove()
-  console.log(taskElement, "removed")
-  removeTaskFromLocalStorage(id);
-
+// Local Storage Helpers
+function getTasksFromLocalStorage(){
+  return JSON.parse(localStorage.getItem("tasks")) || [];
 }
-
-// Edit task text when the edit button is clicked
-// Prompt the user to enter new text and update the task element and local storage
-// Get the task element by its id, get the current text, and prompt the user for new text 
-
-function editTask(id){
-  const taskElement = document.querySelector(`li[data-id="${id}"]`);
-  const taskText = taskElement.querySelector("span").textContent;
-  const newText = prompt("Edit task:", taskText);
-  if (newText !== null && newText.trim() !== "") {
-    taskElement.querySelector("span").textContent = newText.trim();
-    updateTaskInLocalStorage(id, newText.trim());
-  } 
-}
-
-// save task to local storage by getting the existing tasks, adding the new task, and saving the updated array back to local storage
-// Get the existing tasks from local storage, find the task by id, update its text, and save the updated array back to local storage
 
 function saveTaskToLocalStorage(task){
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  tasks.push(task); 
+  const tasks = getTasksFromLocalStorage();
+  tasks.push(task);
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
-
 
 function removeTaskFromLocalStorage(id){
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  tasks = tasks.filter(task => task.id !== id);
+  let tasks = getTasksFromLocalStorage().filter(task => task.id !== id);
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function updateTaskInLocalStorage(id, newText){
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  tasks = tasks.map(task => {
+function updateTaskInLocalStorage(id, newText, newPriority){
+  const tasks = getTasksFromLocalStorage().map(task => {
     if (task.id === id) {
-      task.Text = newText;
+      task.text = newText;
+      if(newPriority) task.priority = newPriority;
     }
     return task;
-  } )
+  })
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 function updateCompletedInLocalStorage(id, completed){
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  tasks = tasks.map(task => {
-    if(task.id == id) task.completed = completed
+  const tasks = getTasksFromLocalStorage().map(task => {
+    if(task.id === id) task.completed = completed;
     return task;
-  }) 
-  localStorage.setItem("tasks", JSON.stringify(tasks))
+  })
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-
-function updateTaskPriorityInLocalStorage(id, priority){
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-}
+// Start the app
+initializeApp();  
