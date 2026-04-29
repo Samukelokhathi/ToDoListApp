@@ -38,6 +38,13 @@ body {
   margin-bottom: 20px;
 }
 
+#input-priority-section-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
 #input-field {
   flex: 1;
   border: 1.5px solid #6c63d5;
@@ -48,6 +55,7 @@ body {
   outline: none;
   background: #f5f0eb;
   color: #1a1825;
+  min-width: 400px;
 }
 
 #input-field::placeholder {

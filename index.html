@@ -11,29 +11,37 @@
 
       <div class="container">
         <h1 id="header">To Do App</h1>
-        <input type="text" id="input-field" placeholder="Enter new task" required>
-        
-        <select  id="priority-select">
-          <option class="priority-low" value="low">Low</option>
-          <option class="priority-medium" value="medium">Medium</option>
-          <option class="priority-high" value="high">High</option>
-        </select>
-        
-        <button id="add-task-btn"> Add task</button> 
 
-        <section id="task-filter">
-          <div id="search-filter">
-            <input id="search-field" type="text" placeholder="Search tasks...">
-            <button id="search-btn">Search</button>
+        <section id="input-priority-section-container">
+          <div id="input-section">
+            <input type="text" id="input-field" placeholder="Enter new task" required>
           </div>
-          <div id="task-filter-buttons">
-            <button id="all-task">All <span>0</span></button>
-            <button id="active-task">Active <span>0</span></button>
-            <button id="completed-task">Completed <span>0</span></button>
-            <button id="high-priority">High priority <span>0</span></button>
-          </div>      
+
+          <div id="priority-section">       
+            <select  id="priority-select">
+              <option class="priority-low" value="low">Low</option>
+              <option class="priority-medium" value="medium">Medium</option>
+              <option class="priority-high" value="high">High</option>
+            </select>
+        
+            <button id="add-task-btn"> Add task</button> 
+          </div>
         </section>
- 
+
+
+      <section id="task-filter">
+        <div id="search-filter">
+          <input id="search-field" type="text" placeholder="Search tasks...">
+          <button id="search-btn">Search</button>
+        </div>
+        <div id="task-filter-buttons">
+          <button id="all-task">All <span>0</span></button>
+          <button id="active-task">Active <span>0</span></button>
+          <button id="completed-task">Completed <span>0</span></button>
+          <button id="high-priority">High priority <span>0</span></button>
+        </div>      
+      </section>
+
         
         <div id="task-container">
           <ul id="taskList"></ul>
