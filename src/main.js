@@ -1,68 +1,76 @@
 // DOM Elements
-const userInput = document.getElementById("input-field");
-const TaskList = document.getElementById("taskList");
-const addTaskBtn = document.getElementById("add-task-btn");
-const prioritySelect = document.getElementById("priority-select")
+const getElementById = (id) => document.getElementById(id);
 
-const allTask =  document.querySelector("#all-task span")
-const activeTask = document.querySelector("#active-task span")
-const completedTask = document.querySelector("#completed-task span")
-const highPriorityTask = document.querySelector("#high-priority span")
+const userInput = getElementById("input-field");
+const taskList = getElementById("taskList");
+const addTaskBtn = getElementById("add-task-btn");
+const prioritySelect = getElementById("priority-select")
 
+const querySelector = (selector) => document.querySelector(selector);
 
+const allTask =  querySelector("#all-task span")
+const activeTask = querySelector("#active-task span")
+const completedTask = querySelector("#completed-task span")
+const highPriorityTask = querySelector("#high-priority span")
 
-let editingTaskId = null;
+let editingTaskId = null; 
 
 // Initialization
+
 function initializeApp(){
   window.addEventListener("load", () => {
     renderTasks(getTasksFromLocalStorage())
-    updateCounts();
+    updateCounts(); 
 });
-  setupListeners();
+  setupListeners(); // makes sure all event listeners are set up when the app initializes
 }
 
-// Event Listeners
+
 function setupListeners(){
   addTaskBtn.addEventListener("click", addTask);
 
-  document.getElementById("search-btn").addEventListener("click", handleSearch);
+  getElementById("search-btn").addEventListener("click", handleSearch);
   
-  document.getElementById("all-task").addEventListener("click", () => {
+  getElementById("all-task").addEventListener("click", () => {
     renderTasks(getTasksFromLocalStorage());
   });
 
-  document.getElementById("active-task").addEventListener("click", () => {
+  getElementById("active-task").addEventListener("click", () => {
     renderTasks(getTasksFromLocalStorage().filter(task => !task.completed));
   })
 
-  document.getElementById("completed-task").addEventListener("click", () => {
+  getElementById("completed-task").addEventListener("click", () => {
     renderTasks(getTasksFromLocalStorage().filter(task => task.completed));
   })
   
-  document.getElementById("high-priority").addEventListener("click", () => {
+  getElementById("high-priority").addEventListener("click", () => {
     renderTasks(getTasksFromLocalStorage().filter(task => task.priority === "high"));
   });
 
   } 
 
 // Handlers
+
 function handleSearch(){
   const searchTerm = document.getElementById("search-field").value.trim().toLowerCase();
   const filteredTasks = getTasksFromLocalStorage().filter(task => task.text.toLowerCase().includes(searchTerm)); 
 
   if (!filteredTasks.length) {
     alert("No tasks found matching your search.");
+  
     return
   }
-  renderTasks(filteredTasks);
+  renderTasks(filteredTasks); 
+  
 
 }
 
 // Core functions
-function checkIfTaskExists(taskContent){
-  return getTasksFromLocalStorage().some(task => task.text.toLowerCase() === taskContent.toLowerCase());
+
+function checkIfTaskExists(taskContent, ignoreId = null){
+  return getTasksFromLocalStorage().some(task => task.text.toLowerCase() === taskContent.toLowerCase() && task.id !== ignoreId);
 }
+
 
 function addTask(){
   const taskContent = userInput.value.trim();
@@ -70,7 +78,7 @@ function addTask(){
 
   if(taskContent == "") return alert("Please enter task!");
 
-  if(editingTaskId !== null) return editTask(taskContent, selectedPriority);
+  if(editingTaskId !== null) return editTask(taskContent, selectedPriority); 
 
   if(checkIfTaskExists(taskContent)){ 
     alert("Task already exists!");
@@ -85,22 +93,33 @@ function addTask(){
   updateCounts();
 }
 
+
 function editTask(newTaskContent, newPriority){
-  const taskElement = document.querySelector(`li[data-id="${editingTaskId}"]`);
+   if(checkIfTaskExists(newTaskContent, editingTaskId)){ 
+    alert("Task already exists!");
+    userInput.value = "";
+    return;
+  }
+  
+  const taskElement = document.querySelector(`li[data-id="${editingTaskId}"]`); 
   taskElement.querySelector('span').textContent = newTaskContent;
 
   const priorityBadge = taskElement.querySelector('.priority');
   priorityBadge.textContent = newPriority;
-  priorityBadge.className = `priority priority ${newPriority}`;
+  priorityBadge.className = `priority priority-${newPriority}`; // Check on this 
+
 
   updateTaskInLocalStorage(editingTaskId, newTaskContent, newPriority);
   editingTaskId = null;
+  
   addTaskBtn.textContent = "Add Task";
   userInput.value = "";
   updateCounts();
 }
 
 // Rendering 
+const createElement = (element) => {document.createElement(element)};
+
 function addTaskElement(task){
   const listItem = document.createElement("li");
   const checkBox = document.createElement("input");
@@ -121,7 +140,6 @@ function addTaskElement(task){
   listItem.setAttribute("data-id", task.id);
   taskText.textContent = task.text;
 
-  // i don't understand this part 
   taskPriority.textContent = task.priority || "medium";
   taskPriority.className = `priority priority-${task.priority || "medium"}`;
 
@@ -129,11 +147,13 @@ function addTaskElement(task){
   editTaskBtn.className = "edit-btn";
   editTaskBtn.addEventListener("click", () => { 
     const currentTask = getTasksFromLocalStorage().find(t => t.id === task.id);
+
     userInput.value = currentTask.text 
     prioritySelect.value = currentTask.priority || "medium";
     addTaskBtn.textContent = "Update Task";
-    editingTaskId = task.id;
-    userInput.focus(); // I don't understand this part either, what does focus do?
+
+    editingTaskId = task.id; 
+    userInput.focus(); 
 
   });
 
@@ -146,13 +166,16 @@ function addTaskElement(task){
   });
 
   listItem.append(checkBox, taskText, taskPriority, editTaskBtn, deleteTaskBtn);
-  TaskList.appendChild(listItem);
+  taskList.appendChild(listItem);
 }
 
+
 function renderTasks(taskToRender){
-  TaskList.innerHTML = "";
+  taskList.innerHTML = "";
   taskToRender.forEach((task) => {addTaskElement(task)})
 } 
+
+// local storage helpers
 
 function updateCounts(){
   const tasks = getTasksFromLocalStorage();
@@ -161,10 +184,10 @@ function updateCounts(){
   activeTask.textContent = tasks.filter(task => !task.completed).length;
   completedTask.textContent = tasks.filter(task => task.completed).length;
   highPriorityTask.textContent = tasks.filter(task => task.priority === "high").length;
-}
-
-
+  }
+  
 // Local Storage Helpers
+
 function getTasksFromLocalStorage(){
   return JSON.parse(localStorage.getItem("tasks")) || [];
 }
